@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 import 'dotenv/config';
 import { Command } from 'commander';
-import { processReview } from './src/index';
-import type { Review } from './src/types';
+import { processReview, type Review } from './src/index';
 import { readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 import * as readline from 'readline';
@@ -57,6 +56,9 @@ program
       
       console.log('Structured Review:');
       console.log(JSON.stringify(result.review, null, 2));
+      
+      console.log('\nExtracted Entities:');
+      console.log(JSON.stringify(result.entities, null, 2));
       
       if (result.validation.warnings.length > 0) {
         console.log('\n⚠️  Warnings:');
@@ -147,7 +149,8 @@ async function startRepl() {
         const exampleData: Review = JSON.parse(readFileSync(examplePath, 'utf-8'));
         console.log('\nProcessing...\n');
         const result = await processReview(exampleData);
-        console.log(JSON.stringify(result.review, null, 2));
+        console.log('Review:', JSON.stringify(result.review, null, 2));
+        console.log('\nEntities:', JSON.stringify(result.entities, null, 2));
         if (result.validation.warnings.length > 0) {
           console.log('\n⚠️  Warnings:');
           result.validation.warnings.forEach(w => console.log(`  - [${w.type}] ${w.message}`));
@@ -170,7 +173,8 @@ async function startRepl() {
         score: 0
       };
       const result = await processReview(reviewInput);
-      console.log(JSON.stringify(result.review, null, 2));
+      console.log('Review:', JSON.stringify(result.review, null, 2));
+      console.log('\nEntities:', JSON.stringify(result.entities, null, 2));
       if (result.validation.warnings.length > 0) {
         console.log('\n⚠️  Warnings:');
         result.validation.warnings.forEach(w => console.log(`  - [${w.type}] ${w.message}`));
