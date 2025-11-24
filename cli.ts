@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import 'dotenv/config';
 import { Command } from 'commander';
-import { parseHotelReview } from './src/index';
+import { processReview } from './src/index';
+import type { Review } from './src/types';
 import { readFileSync, readdirSync } from 'fs';
 import { join } from 'path';
 import * as readline from 'readline';
@@ -21,15 +22,26 @@ program
   .option('-i, --interactive', 'Enter review interactively')
   .action(async (options) => {
     try {
-      let reviewText: string;
+      let input: Review;
 
       if (options.text) {
-        reviewText = options.text;
+        input = {
+          hotelName: 'Unknown Hotel',
+          location: 'Unknown',
+          review: options.text,
+          score: 0
+        };
       } else if (options.example) {
-        const examplePath = join(process.cwd(), 'examples', `${options.example}.txt`);
-        reviewText = readFileSync(examplePath, 'utf-8');
+        const examplePath = join(process.cwd(), 'examples', `${options.example}.json`);
+        input = JSON.parse(readFileSync(examplePath, 'utf-8'));
       } else if (options.interactive) {
-        reviewText = await getInteractiveInput();
+        const reviewText = await getInteractiveInput();
+        input = {
+          hotelName: 'Unknown Hotel',
+          location: 'Unknown',
+          review: reviewText,
+          score: 0
+        };
       } else {
         console.log('\nAvailable examples:');
         listExamples();
@@ -40,10 +52,16 @@ program
         return;
       }
 
-      console.log('\nParsing hotel review...\n');
-      const structured = await parseHotelReview(reviewText);
+      console.log('\nProcessing hotel review...\n');
+      const result = await processReview(input);
+      
       console.log('Structured Review:');
-      console.log(JSON.stringify(structured, null, 2));
+      console.log(JSON.stringify(result.review, null, 2));
+      
+      if (result.validation.warnings.length > 0) {
+        console.log('\n⚠️  Warnings:');
+        result.validation.warnings.forEach(w => console.log(`  - ${w}`));
+      }
     } catch (error) {
       console.error('Error:', error);
       process.exit(1);
@@ -59,10 +77,10 @@ program
 
 function listExamples() {
   const examplesDir = join(process.cwd(), 'examples');
-  const files = readdirSync(examplesDir).filter(f => f.endsWith('.txt'));
+  const files = readdirSync(examplesDir).filter(f => f.endsWith('.json'));
   
   files.forEach(file => {
-    const name = file.replace('.txt', '');
+    const name = file.replace('.json', '');
     console.log(`  - ${name}`);
   });
 }
@@ -125,11 +143,15 @@ async function startRepl() {
     if (input.startsWith('parse ')) {
       const exampleName = input.substring(6).trim();
       try {
-        const examplePath = join(process.cwd(), 'examples', `${exampleName}.txt`);
-        const reviewText = readFileSync(examplePath, 'utf-8');
-        console.log('\nParsing...\n');
-        const structured = await parseHotelReview(reviewText);
-        console.log(JSON.stringify(structured, null, 2));
+        const examplePath = join(process.cwd(), 'examples', `${exampleName}.json`);
+        const exampleData: Review = JSON.parse(readFileSync(examplePath, 'utf-8'));
+        console.log('\nProcessing...\n');
+        const result = await processReview(exampleData);
+        console.log(JSON.stringify(result.review, null, 2));
+        if (result.validation.warnings.length > 0) {
+          console.log('\n⚠️  Warnings:');
+          result.validation.warnings.forEach(w => console.log(`  - ${w}`));
+        }
         console.log();
       } catch (error) {
         console.error(`Error: Could not find example "${exampleName}"`);
@@ -140,9 +162,19 @@ async function startRepl() {
 
     // Treat input as review text
     try {
-      console.log('\nParsing...\n');
-      const structured = await parseHotelReview(input);
-      console.log(JSON.stringify(structured, null, 2));
+      console.log('\nProcessing...\n');
+      const reviewInput: Review = {
+        hotelName: 'Unknown Hotel',
+        location: 'Unknown',
+        review: input,
+        score: 0
+      };
+      const result = await processReview(reviewInput);
+      console.log(JSON.stringify(result.review, null, 2));
+      if (result.validation.warnings.length > 0) {
+        console.log('\n⚠️  Warnings:');
+        result.validation.warnings.forEach(w => console.log(`  - ${w}`));
+      }
       console.log();
     } catch (error) {
       console.error('Error parsing review:', error);
