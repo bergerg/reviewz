@@ -5,8 +5,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "dev": "tsx example.ts",
-    "start": "npm run build && node dist/example.js"
+    "dev": "echo \"Error: no dev server yet\" && exit 1",
+    "start": "npm run build && node dist/example.js",
+    "cli": "tsx cli.ts"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +23,7 @@
   "type": "module",
   "devDependencies": {
     "@types/node": "^24.10.1",
+    "commander": "^14.0.2",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }

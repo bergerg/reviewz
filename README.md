@@ -26,16 +26,42 @@ const structured = await parseHotelReview(review);
 console.log(structured);
 ```
 
-## Run Example
+## Usage
 
+### REPL Mode (default)
 ```bash
-npm run dev
+npm run cli
+```
+Interactive mode with commands:
+- `list` - show available examples
+- `parse <example-name>` - parse an example
+- Type review text directly to parse it
+- `quit` or `exit` to exit
+
+### List available examples
+```bash
+npm run cli list
 ```
 
-Or build and run:
+### Parse an example review
 ```bash
-npm run build
-node dist/example.js
+npm run cli parse -e grand-plaza-chicago
+npm run cli parse -e beach-resort-miami
+```
+
+### Parse custom review text
+```bash
+npm run cli parse -t "Great hotel, amazing service!"
+```
+
+### Interactive mode
+```bash
+npm run cli parse -i
+```
+
+### Quick test
+```bash
+npm run dev
 ```
 
 ## Schema
