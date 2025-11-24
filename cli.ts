@@ -60,7 +60,7 @@ program
       
       if (result.validation.warnings.length > 0) {
         console.log('\n⚠️  Warnings:');
-        result.validation.warnings.forEach(w => console.log(`  - ${w}`));
+        result.validation.warnings.forEach(w => console.log(`  - [${w.type}] ${w.message}`));
       }
     } catch (error) {
       console.error('Error:', error);
@@ -150,7 +150,7 @@ async function startRepl() {
         console.log(JSON.stringify(result.review, null, 2));
         if (result.validation.warnings.length > 0) {
           console.log('\n⚠️  Warnings:');
-          result.validation.warnings.forEach(w => console.log(`  - ${w}`));
+          result.validation.warnings.forEach(w => console.log(`  - [${w.type}] ${w.message}`));
         }
         console.log();
       } catch (error) {
@@ -173,7 +173,7 @@ async function startRepl() {
       console.log(JSON.stringify(result.review, null, 2));
       if (result.validation.warnings.length > 0) {
         console.log('\n⚠️  Warnings:');
-        result.validation.warnings.forEach(w => console.log(`  - ${w}`));
+        result.validation.warnings.forEach(w => console.log(`  - [${w.type}] ${w.message}`));
       }
       console.log();
     } catch (error) {
