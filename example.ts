@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { parseHotelReview } from './src/index.js';
+import { parseHotelReview } from './src/index';
 
 const exampleReview = `
 I stayed at the Grand Plaza Hotel in downtown Chicago for 3 nights. 

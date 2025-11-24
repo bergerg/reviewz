@@ -1,5 +1,5 @@
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
-import { HotelReviewSchema, type HotelReview } from './schema.js';
+import { HotelReviewSchema, type HotelReview } from './schema';
 
 export async function parseHotelReview(reviewText: string): Promise<HotelReview> {
   const model = new ChatGoogleGenerativeAI({
